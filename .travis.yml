@@ -17,7 +17,7 @@ install:
 
 # command to run tests, e.g. python setup.py test
 script: 
-- coverage run ./tests/test_MCMC.py
+- coverage run ./tests/test_schrodinger.py
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)
