@@ -69,6 +69,75 @@ def hamiltonian(input_coefficients,potential_energy,c):
 
 	return np.dot(legendre_table,output_coefficients) #outputs in order [P_0(x),P_1(x),P_2(x),etc.]
 
+def overall_hamiltonian(input_coefficients,potential_energy,c):
+	'''This function calculates the overall hamiltonian on a wavefunction expanded as a list of basis set coefficients 
+	for the Legendre polynomial basis set. 
+
+	Input
+		input_coefficients: list of floats (the wavefx expanded in the Legendre polynomial basis set)
+		potential_energy: float (the potential energy constant)
+		c: float (a constant that corresponds to h_bar / 2 * mass in the Hamiltonian operator)
+
+	Output
+		output_coefficients: list of floats (the basis set coefficients of the hamiltonian operator applied to the 
+		input wavefunction'''
+
+	legendre_table = legendre_table_generator(len(input_coefficients))
+	output_coefficients = [0 + 0j] * len(input_coefficients)
+	for i in range(len(input_coefficients)):
+		output_i = hamiltonian(legendre_table[i],potential_energy,c)
+		output_i = [input_coefficients[i] * j for j in output_i] 
+		# ^ multipling entire representation of hamiltonian applied to basis set function by the input basis 
+		#   set coefficient
+		for k in range(len(input_coefficients)):
+			output_coefficients[k] += output_i[k] #add basis set coefficients
+
+	return output_coefficients 
+
+def mapper(fx,n,basis_set_type = 'legendre'):
+	'''Returns a mapping of an input function to the selected basis set (Legendre Polynomials or Fourier Series).
+
+	Input
+		fx: function (the name of a function of one variable, can produce complex output but must take real input)
+		n: integer (the number of desired basis set functions)
+		basis_set_type: 'legendre' or 'fourier' (the type of function in the basis set)
+
+	Output
+		output_coefficients: array of complex numbers (the function represented as coefficients for the chosen basis set)
+
+	Example
+		fx = x +2 - x**2 
+		mapper(fx,54,basis_set_type = 'fourier')'''
+	if basis_set_type == 'legendre':
+	    from scipy.special import eval_legendre
+	    import scipy.integrate as integrate
+	    import scipy 
+	    
+	    def inner_product_integrand(x,fx,i):
+	        '''fx is the input function
+	           x is the input to the function
+	           i is the Legendre Polynomial number (>= 0)'''
+	        return fx(x) * eval_legendre(i,x)
+
+	    def basis_fx_integrand(i,x):
+	        return eval_legendre(i,x)**2
+	    a = []
+	    for i in range(n):
+	        inner_product_real, error_inner_product_real = integrate.quad(lambda x: scipy.real(inner_product_integrand(x,fx,i)),-1,1)
+	        inner_product_imag, error_inner_product_imag = integrate.quad(lambda x: scipy.imag(inner_product_integrand(x,fx,i)),-1,1)
+	        inner_product = inner_product_real + inner_product_imag *1j
+	        normalizing_coefficient, error_normalizing_coefficient = integrate.quad(lambda i,x: eval_legendre(x,i)**2, -1,1,args=(i))
+	        a.append(inner_product/normalizing_coefficient)
+	    return a
+
+
+
+
+
+
+
+
+
 
 
 
