@@ -121,8 +121,6 @@ def mapper(fx,n,basis_set_type):
                i is the Legendre Polynomial number (>= 0)'''
             return fx(x) * eval_legendre(i,x)
 
-        def basis_fx_integrand(i,x):
-            return eval_legendre(i,x)**2
         a = []
         for i in range(n):
             inner_product_real, error_inner_product_real = integrate.quad(lambda x: scipy.real(inner_product_integrand(x,fx,i)),-1,1)
