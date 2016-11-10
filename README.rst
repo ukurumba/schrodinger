@@ -6,7 +6,7 @@ schrodinger
 .. image:: https://img.shields.io/travis/ukurumba/schrodinger.svg
         :target: https://travis-ci.org/ukurumba/schrodinger
 
-.. image:: https://codecov.io/gh/ukurumba/schrodinger/branch/develop/graph/badge.svg
+.. image:: https://codecov.io/gh/ukurumba/schrodinger/branch/master/graph/badge.svg
 		:target: https://codecov.io/gh/ukurumba/schrodinger 
 
 
