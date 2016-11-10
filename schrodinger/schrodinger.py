@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np 
 import scipy.stats as ss
+import scipy
 
 def legendre_table_generator(n):
 
@@ -94,7 +95,7 @@ def overall_hamiltonian(input_coefficients,potential_energy,c):
 
 	return output_coefficients 
 
-def mapper(fx,n,basis_set_type = 'legendre'):
+def mapper(fx,n,basis_set_type):
 	'''Returns a mapping of an input function to the selected basis set (Legendre Polynomials or Fourier Series).
 
 	Input
@@ -107,10 +108,11 @@ def mapper(fx,n,basis_set_type = 'legendre'):
 
 	Example
 		fx = x +2 - x**2 
-		mapper(fx,54,basis_set_type = 'fourier')'''
+		mapper(fx,54,basis_set_type = 'legendre')'''
+	import scipy.integrate as integrate
 	if basis_set_type == 'legendre':
 	    from scipy.special import eval_legendre
-	    import scipy.integrate as integrate
+	    
 	    import scipy 
 	    
 	    def inner_product_integrand(x,fx,i):
@@ -130,6 +132,44 @@ def mapper(fx,n,basis_set_type = 'legendre'):
 	        a.append(inner_product/normalizing_coefficient)
 	    return a
 
+	elif basis_set_type == 'fourier':
+		num_sin = int(n/2)
+		num_cos = n - num_sin
+		a_cos = []
+		a_sin = []
+
+		def fourier(k,x,wave):
+		    if wave == 'sine':
+		        return np.sin(k * x)
+		    elif wave =='cosine':
+		        return np.cos(k*x)
+		def inner_product_integrand(x,fx,i,wave):
+		    '''fx is the input function
+		       x is the input to the function
+		       i is the basis set index (>= 0)'''
+		    return fx(x) * fourier(i,x,wave)
+		def basis_fx_integrand(x,k,wave):
+		    if wave == 'sine':
+		        return (np.sin(k*x))**2
+		    elif wave == 'cosine':
+		        return (np.cos(k*x))**2
+		    
+		import scipy        	
+		for i in range(num_cos):
+		    inner_product_real, error_inner_product_real = integrate.quad(lambda x: scipy.real(inner_product_integrand(x,fx,i,'cosine')),-np.pi,np.pi)
+		    inner_product_imag, error_inner_product_imag = integrate.quad(lambda x: scipy.imag(inner_product_integrand(x,fx,i,'cosine')),-np.pi,np.pi)
+		    inner_product = inner_product_real + inner_product_imag *1j
+		    normalizing_coefficient, error_normalizing_coefficient = integrate.quad(lambda x: basis_fx_integrand(x,i,'cosine'),-np.pi,np.pi)
+		    a_cos.append(inner_product/normalizing_coefficient)
+		    
+		for i in range(1,num_sin+1,1):
+		    inner_product_real, error_inner_product_real = integrate.quad(lambda x: scipy.real(inner_product_integrand(x,fx,i,'sine')),-np.pi,np.pi)
+		    inner_product_imag, error_inner_product_imag = integrate.quad(lambda x: scipy.imag(inner_product_integrand(x,fx,i,'sine')),-np.pi,np.pi)
+		    inner_product = inner_product_real + inner_product_imag *1j
+		    normalizing_coefficient, error_normalizing_coefficient = integrate.quad(lambda x: basis_fx_integrand(x,i,'sine'),-np.pi,np.pi)
+		    a_sin.append(inner_product/normalizing_coefficient)
+		    
+		return a_cos + a_sin
 
 
 
