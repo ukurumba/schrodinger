@@ -65,9 +65,19 @@ class TestSchrodinger(unittest.TestCase):
         cos_in = [1,1,1,1]
         sin_in = [1,1,1]
         cos_out, sin_out = schrodinger.hamiltonian_fourier(cos_in,sin_in,3,2)
-        print(cos_out)
         self.assertTrue(np.allclose(cos_out,[3,5,11,21]))
         self.assertTrue(np.allclose(sin_out,[5,11,21]))
+
+    def test_overall_hamiltonian_fourier(self):
+        cos_in,sin_in = schrodinger.mapper(lambda x: -np.cos(2*x)/4,5,'fourier')
+        output_coefficients = schrodinger.overall_hamiltonian_fourier(cos_in,sin_in,0,-1)
+        self.assertTrue(np.allclose(output_coefficients,[0,0,1,0,0]))
+        cos_in,sin_in = schrodinger.mapper(lambda x: -np.sin(2*x) / 4, 11, 'fourier')
+        output_coefficients = schrodinger.overall_hamiltonian_fourier(cos_in,sin_in,3,-1)
+        self.assertTrue(np.allclose(output_coefficients,[0,0,0,0,0,0,0,.25,0,0,0]))
+
+    def test_exception_handling(self):
+        self.assertRaises(ValueError,schrodinger.mapper,lambda x: x**2, 6, 'fourier')
     
 
 

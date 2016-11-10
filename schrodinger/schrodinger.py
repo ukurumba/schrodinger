@@ -133,6 +133,8 @@ def mapper(fx,n,basis_set_type):
         return a
 
     elif basis_set_type == 'fourier':
+        if int(n/2) == n/2:
+            raise ValueError('For a fourier basis set choice, the number of basis set functions must be odd')
         num_cos = int((n+1) / 2)
         num_sin = int((n-1) / 2)
     
@@ -207,6 +209,51 @@ def hamiltonian_fourier(cos_in,sin_in,potential_energy,c):
         sin_out[i] += potential_energy_coefficients_sin[i]
 
     return cos_out, sin_out 
+
+
+def overall_hamiltonian_fourier(cos_in,sin_in,potential_energy,c):
+    '''Returns the coefficients of the output of the hamiltonian operator applied to the fourier expansion of an input function.
+    Input
+        cos_in: list of complex numbers (input coefficients for the cosine basis set fxs)
+        sin_in: list of complex numbers (input coefficients for the sine basis set fxs)
+        potential energy: float (the potential energy)
+        c: float (the constant in the hamiltonian operator corresponding to h_bar ^2 / 2 * mass)
+    Output
+        output_coefficients: list of complex numbers (output coefficients for both the cosine and sine basis set fxs)'''
+
+    cos_out = [0 + 0j] * len(cos_in)
+    sin_out = [0 + 0j] * len(sin_in)
+    hamiltonian_table_cos = np.zeros((len(cos_in),len(cos_in)))
+    for i in range(len(hamiltonian_table_cos)):
+        hamiltonian_table_cos[i,i] = 1
+    hamiltonian_table_sin = np.zeros((len(sin_in),len(sin_in)))
+    for i in range(len(hamiltonian_table_sin)):
+        hamiltonian_table_sin[i,i] = 1
+
+    for i in range(len(cos_in)): 
+        cos_i,sin_i = hamiltonian_fourier(hamiltonian_table_cos[i],[0]*len(sin_in),potential_energy,c)
+        cos_i = [cos_in[i] * j for j in cos_i] 
+        sin_i = [cos_in[i] * j for j in sin_i]
+        for k in range(len(cos_i)):
+            cos_out[k] += cos_i[k]
+
+        for l in range(len(sin_i)):
+            sin_out[l] += sin_i[l]
+
+    for i in range(len(sin_in)): 
+        cos_i,sin_i = hamiltonian_fourier([0] * len(cos_in),hamiltonian_table_sin[i],potential_energy,c)
+        cos_i = [sin_in[i] * j for j in cos_i] 
+        sin_i = [sin_in[i] * j for j in sin_i]
+        for k in range(len(cos_i)):
+            cos_out[k] += cos_i[k]
+
+        for l in range(len(sin_i)):
+            sin_out[l] += sin_i[l]
+
+    output_coefficients = cos_out + sin_out
+    return output_coefficients 
+
+
 
 
 
