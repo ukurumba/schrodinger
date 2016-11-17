@@ -78,6 +78,12 @@ class TestSchrodinger(unittest.TestCase):
 
     def test_exception_handling(self):
         self.assertRaises(ValueError,schrodinger.mapper,lambda x: x**2, 6, 'fourier')
+
+    def test_groudstate_wavefx_calculator(self):
+        #just making sure the code works
+        energy,vector = schrodinger.ground_state_wavefx(7,5,-3, basis_set_type = 'legendre')
+        energy_fourier,vector_fourier = schrodinger.ground_state_wavefx(7,5,-3,basis_set_type = 'fourier',domain=(-3,3))
+        self.assertNotEqual(energy,0)
     
 
 
