@@ -306,7 +306,7 @@ def hamiltonian_element(coefficients_i,coefficients_j,potential_energy,c):
     return matrix_element
         
 def hamiltonian_matrix(n,potential_energy,c):
-    '''This computes a matrix where each component is the expectation-value-like integral of the hamiltonian.'''
+    '''This computes a matrix where each component is <Phi_i | H | Phi_j> where H is the hamiltonian operator.'''
     legendre_table = legendre_table_generator(n)
     hamil_matrix = np.zeros((len(legendre_table),len(legendre_table)))
     for i in range(len(legendre_table)):
@@ -316,6 +316,20 @@ def hamiltonian_matrix(n,potential_energy,c):
     return hamil_matrix
 
 def ground_state_wavefx(n,potential_energy,c,basis_set_type = 'legendre', domain = (-1,1)):
+    '''The main function in this program. Computes the ground state wavefunction for a given potential energy and mass (represented as
+    the constant c in the hamiltonian operator). Does so by solving for the eigenvalues (energies) and eigenvectors (wavefxs) of the hamiltonian matrix.
+    Input
+        n: positive integer (the number of basis set functions desired)
+        potential_energy: float (the constant potential energy value)
+        c: float(the constant in the hamiltonian operator equal to h_bar ^ 2 / 2 * mass)
+        basis_set_type: string (optional) choose from: 'legendre' or 'fourier' (the type of basis set desired. Defaults to legendre)
+        domain: tuple (optional) (the domain on which the fourier basis set is to be evaluated. Defaults to (-1,1))
+
+    Output
+        (eval, evec) : float, array of floats (eval = the minimum energy of the system. evec = best approximation of the groundstate
+        wavefx, represented in the chosen basis set) Note: for fourier basis set, outputs basis set functions in the order 
+        (1, cos(x),cos(2x),...,sin(x),sin(2x), ...)'''
+
     if basis_set_type == 'legendre':
         hamil_matrix = hamiltonian_matrix(n,potential_energy,c)
         evals,evecs = np.linalg.eigh(hamil_matrix)
@@ -326,6 +340,7 @@ def ground_state_wavefx(n,potential_energy,c,basis_set_type = 'legendre', domain
         return min(evals), evecs[np.argmin(evals)]
 
 def coeffs_to_fx_fourier(cos_in,sin_in,x):
+    '''This function takes a function represented on the fourier basis set and evaluates it at a point x.'''
     value = 0
     for i in range(len(cos_in)):
         value += cos_in[i] * np.cos(i * x)
@@ -334,7 +349,9 @@ def coeffs_to_fx_fourier(cos_in,sin_in,x):
     return value 
 
 def hamiltonian_element_fourier(cos_in_i,sin_in_i,cos_in_j,sin_in_j,potential_energy,c,domain):
-    import scipy.integrate as integrate
+    '''This function computes an element of the hamiltonian matrix, doing so by numerically computing the integral of 
+    the product of the conjugate of phi i and the hamiltonian operated on phi_j.'''
+
     def value(x):
         phi_i = np.conjugate(coeffs_to_fx_fourier(cos_in_i,sin_in_j,x))
         cos_j,sin_j = hamiltonian_fourier(cos_in_j,sin_in_j,potential_energy,c)
@@ -346,7 +363,11 @@ def hamiltonian_element_fourier(cos_in_i,sin_in_i,cos_in_j,sin_in_j,potential_en
     matrix_element = matrix_element_real + matrix_element_imaginary * 1j
     return matrix_element 
 
-def hamiltonian_matrix_fourier(n,potential_energy,c,domain = [-1,1]):
+def hamiltonian_matrix_fourier(n,potential_energy,c,domain = (-1,1)):
+    '''Evaluates the hamiltonian matrix in the fourier basis set, where each element i,j of the matrix is <phi_i | H | phi_j>
+    where H is the hamiltonian operator with the given potential energy and c value. i and j correspond to selections from the 
+    list (1,cos(x),cos(2x),...,sin(x),sin(2x),...) etc.'''
+
     num_cos = int((n+1)/2)
     num_sin = int((n-1)/2)
     cos_table = np.zeros((num_cos,num_cos))
