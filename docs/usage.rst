@@ -6,7 +6,7 @@ To use schrodinger in a project::
 
     import schrodinger
 
-To calculate the lowest-energy wavefunction for a given potential energy and c constant::
+To calculate the lowest-energy wavefunction for a given potential energy and c constant ::
 	help(schrodinger.ground_state_wavefx)
 	>>> The main function in this program. Computes the ground state wavefunction for a given potential energy and mass (represented as
     the constant c in the hamiltonian operator). Does so by solving for the eigenvalues (energies) and eigenvectors (wavefxs) of the hamiltonian matrix.
