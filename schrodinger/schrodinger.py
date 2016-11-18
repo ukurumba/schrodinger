@@ -363,7 +363,7 @@ def hamiltonian_element_fourier(cos_in_i,sin_in_i,cos_in_j,sin_in_j,potential_en
     the product of the conjugate of phi i and the hamiltonian operated on phi_j.'''
 
     def value(x):
-        phi_i = np.conjugate(coeffs_to_fx_fourier(cos_in_i,sin_in_j,x))
+        phi_i = np.conjugate(coeffs_to_fx_fourier(cos_in_i,sin_in_i,x))
         cos_j,sin_j = hamiltonian_fourier(cos_in_j,sin_in_j,potential_energy,c)
         phi_j = coeffs_to_fx_fourier(cos_j,sin_j,x)
         return phi_i * phi_j
@@ -377,7 +377,6 @@ def hamiltonian_matrix_fourier(n,potential_energy,c,domain = (-1,1)):
     '''Evaluates the hamiltonian matrix in the fourier basis set, where each element i,j of the matrix is <phi_i | H | phi_j>
     where H is the hamiltonian operator with the given potential energy and c value. i and j correspond to selections from the 
     list (1,cos(x),cos(2x),...,sin(x),sin(2x),...) etc.'''
-
     num_cos = int((n+1)/2)
     num_sin = int((n-1)/2)
     cos_table = np.zeros((num_cos,num_cos))
@@ -386,7 +385,6 @@ def hamiltonian_matrix_fourier(n,potential_energy,c,domain = (-1,1)):
         cos_table[i,i] = 1
     for i in range(len(sin_table)):
         sin_table[i,i] = 1
-    
     hamil_matrix = np.zeros((n,n))
     for i in range(n): #this is not the best way to do it but since I've already used this division of cos/sin ... 
         if i < num_cos:
@@ -402,9 +400,9 @@ def hamiltonian_matrix_fourier(n,potential_energy,c,domain = (-1,1)):
             elif j >= num_cos:
                 cos_in_j = [0] * num_cos
                 sin_in_j = sin_table[j-num_cos]
-                
-            hamil_matrix[i,j] = scipy.real(hamiltonian_element_fourier(cos_in_i,sin_in_i,cos_in_j,sin_in_j,potential_energy,c,domain))
-            return hamil_matrix
+            hamil_matrix[i,j] = scipy.real(hamiltonian_element_fourier(cos_in_i,sin_in_i,cos_in_j,sin_in_j,potential_energy,c,domain))      
+    return hamil_matrix
+        
     
 
 

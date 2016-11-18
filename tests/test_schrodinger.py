@@ -84,6 +84,11 @@ class TestSchrodinger(unittest.TestCase):
         energy,vector = schrodinger.ground_state_wavefx(7,5,-3, basis_set_type = 'legendre')
         energy_fourier,vector_fourier = schrodinger.ground_state_wavefx(7,5,-3,basis_set_type = 'fourier',domain=(-3,3))
         self.assertNotEqual(energy,0)
+
+    def test_hamiltonian_matrix_fourier(self):
+        matrix =  schrodinger.hamiltonian_matrix_fourier(3,1,1,domain = (-np.pi / 2,np.pi/2))
+        print(matrix)
+        self.assertTrue(np.allclose(matrix,[[np.pi,4,0],[2,np.pi,0],[0,0,np.pi]]))
     
 
 
