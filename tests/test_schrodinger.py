@@ -41,9 +41,9 @@ class TestSchrodinger(unittest.TestCase):
         for i in range(6):
             self.assertEqual(schrodinger.hamiltonian([0,0,.25,0,-.125,0],0,1)[i],[0,0,1,0,0,0][i])
 
-    def test_overall_hamiltonian(self):
+    def test_overall_hamiltonian_legendre(self):
         input_coefficients = schrodinger.mapper(lambda x: +.25*x**2 -.125*x**4,6,'legendre')
-        bool_value = np.allclose(np.asarray(schrodinger.overall_hamiltonian(input_coefficients,0,1)),[0,0,1,0,0,0])
+        bool_value = np.allclose(np.asarray(schrodinger.overall_hamiltonian_legendre(input_coefficients,0,1)),[0,0,1,0,0,0])
         inputs_2 = schrodinger.mapper(lambda x: .25*x**2 + 3j,5,'legendre') #checking to ensure complex #s don't throw an error
         self.assertTrue(bool_value)
 

@@ -29,6 +29,31 @@ def legendre_table_generator(n):
         grid.append(table)
     return grid
 
+def overall_hamiltonian_legendre(input_coefficients,potential_energy,c):
+    '''This function calculates the overall hamiltonian on a wavefunction expanded as a list of basis set coefficients 
+    for the Legendre polynomial basis set. 
+
+    Input
+        input_coefficients: list of floats (the wavefx expanded in the Legendre polynomial basis set)
+        potential_energy: float (the potential energy constant)
+        c: float (a constant that corresponds to h_bar / 2 * mass in the Hamiltonian operator)
+
+    Output
+        output_coefficients: list of floats (the basis set coefficients of the hamiltonian operator applied to the 
+        input wavefunction expanded in the Legendre basis set)'''
+
+    legendre_table = legendre_table_generator(len(input_coefficients))
+    output_coefficients = [0 + 0j] * len(input_coefficients)
+    for i in range(len(input_coefficients)):
+        output_i = hamiltonian(legendre_table[i],potential_energy,c)
+        output_i = [input_coefficients[i] * j for j in output_i] 
+        # ^ multipling entire representation of hamiltonian applied to basis set function by the input basis 
+        #   set coefficient
+        for k in range(len(input_coefficients)):
+            output_coefficients[k] += output_i[k] #add basis set coefficients
+
+    return output_coefficients 
+
 def derivative(input_coefficients):
     '''This function takes the derivative of a Legendre polynomial. The Legendre polynomial is passed to the del function 
     as a set of coefficients to the standard polynomial basis set (1,x,x^2,x^3, etc.). The derivative is then computed on 
@@ -78,31 +103,6 @@ def hamiltonian(input_coefficients,potential_energy,c):
 
     return np.dot(legendre_table,output_coefficients) #outputs in order [P_0(x),P_1(x),P_2(x),etc.]
 
-def overall_hamiltonian(input_coefficients,potential_energy,c):
-    '''This function calculates the overall hamiltonian on a wavefunction expanded as a list of basis set coefficients 
-    for the Legendre polynomial basis set. 
-
-    Input
-        input_coefficients: list of floats (the wavefx expanded in the Legendre polynomial basis set)
-        potential_energy: float (the potential energy constant)
-        c: float (a constant that corresponds to h_bar / 2 * mass in the Hamiltonian operator)
-
-    Output
-        output_coefficients: list of floats (the basis set coefficients of the hamiltonian operator applied to the 
-        input wavefunction)'''
-
-    legendre_table = legendre_table_generator(len(input_coefficients))
-    output_coefficients = [0 + 0j] * len(input_coefficients)
-    for i in range(len(input_coefficients)):
-        output_i = hamiltonian(legendre_table[i],potential_energy,c)
-        output_i = [input_coefficients[i] * j for j in output_i] 
-        # ^ multipling entire representation of hamiltonian applied to basis set function by the input basis 
-        #   set coefficient
-        for k in range(len(input_coefficients)):
-            output_coefficients[k] += output_i[k] #add basis set coefficients
-
-    return output_coefficients 
-
 def mapper(fx,n,basis_set_type):
     '''Returns a mapping of an input function to the selected basis set (Legendre Polynomials or Fourier Series).
 
@@ -116,7 +116,9 @@ def mapper(fx,n,basis_set_type):
 
     Example
         fx = x +2 - x**2 
-        mapper(fx,54,basis_set_type = 'legendre')'''
+        output = schrodinger.mapper(fx,54,basis_set_type = 'legendre')
+        cos_out, sin_out = schrodinger.mapper(fx,55,basis_set_type = 'fourier'''
+
     import scipy.integrate as integrate
     if basis_set_type == 'legendre':
         from scipy.special import eval_legendre
@@ -180,7 +182,6 @@ def mapper(fx,n,basis_set_type):
             
         return a_cos,a_sin #keeping cosine and sine coefficients separate to facilitate taking the derivative
 
-
 def derivative_fourier(cos_in,sin_in):
     '''This function takes the derivative of a function passed in as a set of cosine and sine basis set coefficients. Internal function.'''
     sin_out = [-i*cos_in[i] for i in range(1,len(sin_in)+1,1)]
@@ -216,7 +217,6 @@ def hamiltonian_fourier(cos_in,sin_in,potential_energy,c):
         sin_out[i] += potential_energy_coefficients_sin[i]
 
     return cos_out, sin_out 
-
 
 def overall_hamiltonian_fourier(cos_in,sin_in,potential_energy,c):
     '''Returns the coefficients of the output of the hamiltonian operator applied to the fourier expansion of an input function.
@@ -272,8 +272,8 @@ def coeffs_to_fx(input_coefficients,x,coeff_type):
 
     value = 0
     if coeff_type == 'legendre':
-        for i in range(len(input_coefficients)):
-            value += input_coefficients[i] * eval_legendre(i,x)
+        for i in range(len(input_coefficients)): 
+            value += input_coefficients[i] * eval_legendre(i,x) #eval_legendre returns value of ith legendre polynomial at pt x
     elif coeff_type == 'standard':
         for i in range(len(input_coefficients)):
             value += input_coefficients[i] * x ** i
@@ -323,12 +323,22 @@ def ground_state_wavefx(n,potential_energy,c,basis_set_type = 'legendre', domain
         potential_energy: float (the constant potential energy value)
         c: float(the constant in the hamiltonian operator equal to h_bar ^ 2 / 2 * mass)
         basis_set_type: string (optional) choose from: 'legendre' or 'fourier' (the type of basis set desired. Defaults to legendre)
-        domain: tuple (optional) (the domain on which the fourier basis set is to be evaluated. Defaults to (-1,1))
+        domain: tuple (optional) (the domain on which the fourier basis set is to be evaluated. Defaults to (-1,1)) Note: Domain 
+        cannot be altered for the legendre basis set (will produce an error)
 
     Output
         (eval, evec) : float, array of floats (eval = the minimum energy of the system. evec = best approximation of the groundstate
         wavefx, represented in the chosen basis set) Note: for fourier basis set, outputs basis set functions in the order 
-        (1, cos(x),cos(2x),...,sin(x),sin(2x), ...)'''
+        (1, cos(x),cos(2x),...,sin(x),sin(2x), ...)
+
+    Example
+        n = 11
+        potential_energy = 15
+        c = 16
+        wavefx = schrodinger.ground_state_wavefx(n,potential_energy,c,basis_set_type = 'fourier',domain = (-2,2))'''
+
+
+
 
     if basis_set_type == 'legendre':
         hamil_matrix = hamiltonian_matrix(n,potential_energy,c)
