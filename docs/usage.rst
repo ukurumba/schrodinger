@@ -5,9 +5,12 @@ Usage
 To use schrodinger in a project::
 
     import schrodinger
-To calculate the lowest-energy wavefunction for a given potential energy and c constant ::
-	help(schrodinger.ground_state_wavefx)
-	>>> '''The main function in this program. Computes the ground state wavefunction for a given potential energy and mass (represented         as the constant c in the hamiltonian operator). Does so by solving for the eigenvalues (energies) and eigenvectors (wavefxs) of         the hamiltonian matrix.
+To calculate the lowest-energy wavefunction for a given potential energy and c constant:
+::
+    help(schrodinger.ground_state_wavefx)
+	>>> '''The main function in this program. Computes the ground state wavefunction for a given potential energy 
+        and mass (represented as the constant c in the hamiltonian operator). Does so by solving for the eigenvalues (energies) 
+        and eigenvectors (wavefxs) of the hamiltonian matrix.
     
         Input
             n: positive integer (the number of basis set functions desired)
@@ -73,7 +76,7 @@ for either the legendre or fourier basis set choice, the actual hamiltonian eval
             output_coefficients: list of floats (the basis set coefficients of the hamiltonian operator applied to the 
             input wavefunction expanded in the Legendre basis set)
 
-        help(schrodinger.overall_hamiltonian_fourier)
+    help(schrodinger.overall_hamiltonian_fourier)
     >>> Returns the coefficients of the output of the hamiltonian operator applied to the fourier expansion of an input function.
         Input
             cos_in: list of complex numbers (input coefficients for the cosine basis set fxs)
