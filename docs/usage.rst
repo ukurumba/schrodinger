@@ -6,9 +6,9 @@ To use schrodinger in a project::
 
     import schrodinger
 
-To calculate the lowest-energy wavefunction for a given potential energy and c constant ::
+To calculate the lowest-energy wavefunction for a given potential energy and c constant 
 	help(schrodinger.ground_state_wavefx)
-	>>> The main function in this program. Computes the ground state wavefunction for a given potential energy and mass (represented as
+	>>> '''The main function in this program. Computes the ground state wavefunction for a given potential energy and mass (represented as
     the constant c in the hamiltonian operator). Does so by solving for the eigenvalues (energies) and eigenvectors (wavefxs) of the hamiltonian matrix.
     Input
         n: positive integer (the number of basis set functions desired)
@@ -27,7 +27,7 @@ To calculate the lowest-energy wavefunction for a given potential energy and c c
         n = 11
         potential_energy = 15
         c = 16
-        wavefx = schrodinger.ground_state_wavefx(n,potential_energy,c,basis_set_type = 'fourier',domain = (-2,2))
+        wavefx = schrodinger.ground_state_wavefx(n,potential_energy,c,basis_set_type = 'fourier',domain = (-2,2))'''
 
 To evaluate the hamiltonian on an input function requires using two functions (note that while the mapper function is the same 
 for either the legendre or fourier basis set choice, the actual hamiltonian evaluation function is different. See below::
@@ -46,7 +46,7 @@ for either the legendre or fourier basis set choice, the actual hamiltonian eval
 	fourier_hamiltonian = schrodinger.overall_hamiltonian_fourier(input_cosine_coefficients, input_sine_coefficients, potential_energy,c)
 
 	help(schrodinger.mapper)
-	>>> Returns a mapping of an input function to the selected basis set (Legendre Polynomials or Fourier Series).
+	>>> '''Returns a mapping of an input function to the selected basis set (Legendre Polynomials or Fourier Series).
 
     Input
         fx: function (the name of a function of one variable, can produce complex output but must take real input)
@@ -59,10 +59,10 @@ for either the legendre or fourier basis set choice, the actual hamiltonian eval
     Example
         fx = x +2 - x**2 
         output = schrodinger.mapper(fx,54,basis_set_type = 'legendre')
-        cos_out, sin_out = schrodinger.mapper(fx,55,basis_set_type = 'fourier'
+        cos_out, sin_out = schrodinger.mapper(fx,55,basis_set_type = 'fourier' '''
 
     help(schrodinger.overall_hamiltonian_legendre)
-    >>> This function calculates the overall hamiltonian on a wavefunction expanded as a list of basis set coefficients 
+    >>> '''This function calculates the overall hamiltonian on a wavefunction expanded as a list of basis set coefficients 
     for the Legendre polynomial basis set. 
 
     Input
@@ -82,7 +82,7 @@ for either the legendre or fourier basis set choice, the actual hamiltonian eval
         potential energy: float (the potential energy)
         c: float (the constant in the hamiltonian operator corresponding to h_bar ^2 / 2 * mass)
     Output
-        output_coefficients: list of complex numbers (output coefficients for both the cosine and sine basis set fxs)
+        output_coefficients: list of complex numbers (output coefficients for both the cosine and sine basis set fxs)'''
         
 
 
